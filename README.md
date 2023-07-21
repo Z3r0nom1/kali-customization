@@ -13,6 +13,7 @@ Before running the script, ensure you have the following:
 - `wget` installed (for downloading font and GPG key)
 - `unzip` installed (for unzipping the font)
 - `gpg` installed (for importing GPG key)
+- `pv` installed (for progress bar display)
 
 ## Usage
 
