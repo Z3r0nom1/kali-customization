@@ -10,10 +10,11 @@ install_hack_nerd_font() {
     font_zip_file="$temp_dir/Hack.zip"
     wget -q -O "$font_zip_file" "$font_zip_url" || { echo "Failed to download the font file."; return 1; }
 
-    # Unzip the font and move it to /usr/share/fonts
+    # Unzip the font
     unzip -q "$font_zip_file" -d "$temp_dir"
-    font_dir="$temp_dir/Hack"
-    sudo mv "$font_dir" /usr/share/fonts/
+
+    # Move the font files to /usr/share/fonts and show the progress bar
+    find "$temp_dir" -type f -exec sh -c 'pv "$1" > "/usr/share/fonts/$(basename "$1")"' _ {} \;
 
     # Update font cache
     sudo fc-cache -f
@@ -22,6 +23,34 @@ install_hack_nerd_font() {
     rm -rf "$temp_dir"
 
     echo "Hack Nerd Font installed successfully."
+}
+
+# Function to customize the terminal
+customize_terminal() {
+    read -p "Enter your username: " username
+
+    if [ -z "$username" ]; then
+        echo "Error: Username cannot be empty."
+        return 1
+    fi
+
+    qterminal_config="/home/$username/.config/qterminal.org/qterminal.ini"
+
+    if [ -f "$qterminal_config" ]; then
+        backup_file="$qterminal_config.bak"
+        echo "Backing up the qterminal.ini file to $backup_file..."
+        cp "$qterminal_config" "$backup_file"
+
+        # Customize qterminal.ini
+        echo "Customizing the qterminal.ini file..."
+        sed -i 's/^fontFamily=.*/fontFamily=Hack Nerd Font/g' "$qterminal_config"
+        sed -i 's/^highlightCurrentTerminal=.*/highlightCurrentTerminal=true/g' "$qterminal_config"
+        sed -i 's/^ApplicationTransparency=.*/ApplicationTransparency=0/g' "$qterminal_config"
+
+        echo "qterminal.ini file customized successfully."
+    else
+        echo "Warning: qterminal.ini not found. Skipping customization."
+    fi
 }
 
 # Function to install Sublime Text 3
@@ -86,6 +115,13 @@ install_p10k_root() {
         exit 1
     fi
 
+    read -p "Enter your username: " username
+
+    if [ -z "$username" ]; then
+        echo "Error: Username cannot be empty."
+        return 1
+    fi
+
     echo "Installing p10k with root privileges..."
 
     if [ ! -f "./.zshrc" ] || [ ! -f "./.p10k.zsh" ]; then
@@ -104,7 +140,7 @@ install_p10k_root() {
     cp -f ./.p10k.zsh /root/.p10k.zsh
 
     # Create a symbolic link for .zshrc in the home directory of the current user
-    ln -s /root/.zshrc /home/$(whoami)/.zshrc
+    ln -sf /root/.zshrc /home/$username/.zshrc
 
     echo "p10k installed successfully for root."
 }
@@ -113,10 +149,11 @@ install_p10k_root() {
 while true; do
     echo "Terminal Configuration Menu"
     echo "1. Install Hack Nerd Font"
-    echo "2. Install Sublime Text 3"
-    echo "3. Install bat and lsd"
-    echo "4. Install p10k"
-    echo "5. Install p10k with root privileges"
+    echo "2. Customize Terminal"
+    echo "3. Install Sublime Text 3"
+    echo "4. Install bat and lsd"
+    echo "5. Install p10k"
+    echo "6. Install p10k with root privileges"
     echo "0. Exit"
 
     read -p "Enter your choice: " choice
@@ -127,15 +164,18 @@ while true; do
             install_hack_nerd_font
             ;;
         2)
-            install_sublime_text
+            customize_terminal
             ;;
         3)
-            install_bat_lsd
+            install_sublime_text
             ;;
         4)
-            install_p10k
+            install_bat_lsd
             ;;
         5)
+            install_p10k
+            ;;
+        6)
             install_p10k_root
             ;;
         0)
