@@ -89,6 +89,8 @@ install_bat_lsd() {
 install_p10k() {
     echo "Installing p10k..."
 
+    echo "Current directory: $(pwd)"
+
     if [ ! -f "./.zshrc" ] || [ ! -f "./.p10k.zsh" ]; then
         echo "Error: .zshrc or .p10k.zsh files not found in the current directory."
         echo "Please make sure you have both .zshrc and .p10k.zsh files present in the same directory as this script."
@@ -140,7 +142,7 @@ install_p10k_root() {
     cp -f ./.p10k.zsh /root/.p10k.zsh
 
     # Create a symbolic link for .zshrc in the home directory of the current user
-    ln -sf /root/.zshrc /home/$username/.zshrc
+    ln -sf /home/$username/.zshrc /root/.zshrc
 
     echo "p10k installed successfully for root."
 }
