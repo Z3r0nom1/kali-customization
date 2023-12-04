@@ -65,6 +65,21 @@ customize_terminal() {
         # Customize qterminal.ini
         echo "Customizing the qterminal.ini file..."
         cp -f ./qterminal.ini /home/$username/.config/qterminal.org/qterminal.ini
+
+        # Open and close a new terminal window
+        echo "Opening and closing a new terminal window to apply changes..."
+        
+        # Check if xdotool is installed
+        if ! command -v xdotool &>/dev/null; then
+            echo "Error: xdotool is not installed. Please install it before running this script."
+            return 1
+        fi
+
+        # Check if xdotool commands succeed
+        if ! xdotool key ctrl+alt+t sleep 1 xdotool key ctrl+shift+w; then
+            echo "Error: Failed to simulate key presses with xdotool."
+            return 1
+        fi
     else
         echo "Warning: qterminal.ini not found. Skipping customization."
     fi
@@ -90,6 +105,7 @@ install_sublime_text() {
     echo "Sublime Text 3 installed successfully."
 }
 
+
 # Function to install bat and lsd
 install_bat_lsd() {
     echo "Installing bat and lsd..."
@@ -102,6 +118,7 @@ install_bat_lsd() {
 
     echo "bat and lsd installed successfully."
 }
+
 
 # Function to install p10k
 install_p10k() {
@@ -127,6 +144,7 @@ install_p10k() {
 
     echo "p10k installed successfully."
 }
+
 
 # Function to install p10k with root privileges
 install_p10k_root() {
@@ -170,6 +188,7 @@ install_p10k_root() {
 
     echo "p10k installed successfully for root."
 }
+
 
 # Main menu
 while true; do
