@@ -29,8 +29,15 @@ install_hack_nerd_font() {
 customize_terminal() {
     read -p "Enter your username: " username
 
+    # Check if username is empty
     if [ -z "$username" ]; then
         echo "Error: Username cannot be empty."
+        return 1
+    fi
+
+    # Check if user exists
+    if ! id "$username" &>/dev/null; then
+        echo "Error: User '$username' does not exist."
         return 1
     fi
 
@@ -47,11 +54,20 @@ customize_terminal() {
         sed -i 's/^highlightCurrentTerminal=.*/highlightCurrentTerminal=true/g' "$qterminal_config"
         sed -i 's/^ApplicationTransparency=.*/ApplicationTransparency=0/g' "$qterminal_config"
 
-        echo "qterminal.ini file customized successfully."
+        # Check if modifications were successful
+        if grep -q 'fontFamily=Hack Nerd Font' "$qterminal_config" &&
+           grep -q 'highlightCurrentTerminal=true' "$qterminal_config" &&
+           grep -q 'ApplicationTransparency=0' "$qterminal_config"; then
+            echo "qterminal.ini file customized successfully."
+        else
+            echo "Error: Failed to apply customizations to qterminal.ini."
+            return 1
+        fi
     else
         echo "Warning: qterminal.ini not found. Skipping customization."
     fi
 }
+
 
 # Function to install Sublime Text 3
 install_sublime_text() {
