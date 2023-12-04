@@ -147,10 +147,16 @@ install_p10k_root() {
         exit 1
     fi
 
-    read -p "Enter your username: " username
+    read -p "Enter the username that you want to copy the configuration from: " username
 
+    # Check if username is empty
     if [ -z "$username" ]; then
         echo "Error: Username cannot be empty."
+        return 1
+    fi
+    # Check if user exists
+    if ! id "$username" &>/dev/null; then
+        echo "Error: User '$username' does not exist."
         return 1
     fi
 
