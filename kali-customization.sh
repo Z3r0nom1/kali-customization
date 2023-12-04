@@ -40,7 +40,6 @@ install_hack_nerd_font() {
 
 
 # Function to customize the terminal
-# Function to customize the terminal
 customize_terminal() {
     read -p "Enter your username: " username
 
@@ -65,20 +64,21 @@ customize_terminal() {
 
         # Customize qterminal.ini
         echo "Customizing the qterminal.ini file..."
-        cp -f ./qterminal.ini /home/$username/.config/qterminal.org/qterminal.ini
+        cp -f ./qterminal.ini "/home/$username/.config/qterminal.org/qterminal.ini"
 
-        # Open a new terminal window
-        echo "Opening a new terminal window to apply changes..."
-        xdotool key ctrl+alt+t
-        sleep 1
+        # Close QTerminal
+        echo "Closing QTerminal..."
+        pkill qterminal  # Adjust the process name if needed
+        sleep 2  # Adjust the sleep duration based on how long it takes for QTerminal to close
 
-        # Send Ctrl+Shift+W to the newly opened terminal window
-        echo "Sending Ctrl+Shift+W to the newly opened terminal window..."
-        xdotool key ctrl+shift+w
+        # Open QTerminal
+        echo "Opening QTerminal to apply changes..."
+        qterminal &  # Adjust the command to start QTerminal if needed
     else
         echo "Warning: qterminal.ini not found. Skipping customization."
     fi
 }
+
 
 
 # Function to install Sublime Text 3
