@@ -4,11 +4,22 @@
 install_hack_nerd_font() {
     echo "Installing Hack Nerd Font..."
 
+    # Check if root privileges are available
+    if ! sudo -n true 2>/dev/null; then
+        # Prompt for the root password
+        sudo -v || { echo "Error: Failed to obtain root privileges."; exit 1; }
+    fi
+
+    # Enable error control
+    set -e
+
     # Download the font zip file
     font_zip_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/Hack.zip"
     temp_dir=$(mktemp -d)
     font_zip_file="$temp_dir/Hack.zip"
-    wget -q -O "$font_zip_file" "$font_zip_url" || { echo "Failed to download the font file."; return 1; }
+    
+    # Check for download errors
+    wget -q -O "$font_zip_file" "$font_zip_url" || { echo "Error: Failed to download the font file."; rm -rf "$temp_dir"; exit 1; }
 
     # Unzip the font
     unzip -q "$font_zip_file" -d "$temp_dir"
@@ -22,8 +33,11 @@ install_hack_nerd_font() {
     # Clean up temporary files
     rm -rf "$temp_dir"
 
+    set +e
+
     echo "Hack Nerd Font installed successfully."
 }
+
 
 # Function to customize the terminal
 customize_terminal() {
