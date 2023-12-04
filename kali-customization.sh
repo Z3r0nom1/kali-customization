@@ -40,6 +40,7 @@ install_hack_nerd_font() {
 
 
 # Function to customize the terminal
+# Function to customize the terminal
 customize_terminal() {
     read -p "Enter your username: " username
 
@@ -66,20 +67,14 @@ customize_terminal() {
         echo "Customizing the qterminal.ini file..."
         cp -f ./qterminal.ini /home/$username/.config/qterminal.org/qterminal.ini
 
-        # Open and close a new terminal window
-        echo "Opening and closing a new terminal window to apply changes..."
-        
-        # Check if xdotool is installed
-        if ! command -v xdotool &>/dev/null; then
-            echo "Error: xdotool is not installed. Please install it before running this script."
-            return 1
-        fi
+        # Open a new terminal window
+        echo "Opening a new terminal window to apply changes..."
+        xdotool key ctrl+alt+t
+        sleep 1
 
-        # Check if xdotool commands succeed
-        if ! xdotool key ctrl+alt+t sleep 1 xdotool key ctrl+shift+w; then
-            echo "Error: Failed to simulate key presses with xdotool."
-            return 1
-        fi
+        # Send Ctrl+Shift+W to the newly opened terminal window
+        echo "Sending Ctrl+Shift+W to the newly opened terminal window..."
+        xdotool key ctrl+shift+w
     else
         echo "Warning: qterminal.ini not found. Skipping customization."
     fi
