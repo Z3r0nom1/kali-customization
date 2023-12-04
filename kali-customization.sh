@@ -64,19 +64,7 @@ customize_terminal() {
 
         # Customize qterminal.ini
         echo "Customizing the qterminal.ini file..."
-        sed -i 's/^fontFamily=.*/fontFamily=Hack Nerd Font/g' "$qterminal_config"
-        sed -i 's/^highlightCurrentTerminal=.*/highlightCurrentTerminal=true/g' "$qterminal_config"
-        sed -i 's/^ApplicationTransparency=.*/ApplicationTransparency=0/g' "$qterminal_config"
-
-        # Check if modifications were successful
-        if grep -q 'fontFamily=Hack Nerd Font' "$qterminal_config" &&
-           grep -q 'highlightCurrentTerminal=true' "$qterminal_config" &&
-           grep -q 'ApplicationTransparency=0' "$qterminal_config"; then
-            echo "qterminal.ini file customized successfully."
-        else
-            echo "Error: Failed to apply customizations to qterminal.ini."
-            return 1
-        fi
+        cp -f ./qterminal.ini /home/$username/.config/qterminal.org/qterminal.ini
     else
         echo "Warning: qterminal.ini not found. Skipping customization."
     fi
