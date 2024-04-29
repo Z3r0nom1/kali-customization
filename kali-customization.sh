@@ -182,7 +182,7 @@ install_p10k_root() {
 
     # Clone the powerlevel10k repository as root
     #git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/powerlevel10k
-    cp /home/$username/powerlevel10k /root/powerlevel10k
+    cp -r /home/$username/powerlevel10k /root/powerlevel10k
     
     # Add the powerlevel10k theme to root's .zshrc file
     echo 'source /root/powerlevel10k/powerlevel10k.zsh-theme' >> /root/.zshrc
