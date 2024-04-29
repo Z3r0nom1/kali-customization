@@ -2,44 +2,54 @@
 
 # Function to install Hack Nerd Font
 install_hack_nerd_font() {
-    echo "Installing Hack Nerd Font..."
+  echo "Installing Hack Nerd Font..."
 
-    # Enable error control
-    set -e
+  # Enable error control
+  set -e
 
-    # Download the font zip file
-    echo "Downloading Hack Nerd Font..."
-    font_zip_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/Hack.zip"
-    temp_dir=$(mktemp -d)
-    font_zip_file="$temp_dir/Hack.zip"
-    
-    # Check for download errors
-    wget -q -O "$font_zip_file" "$font_zip_url" || { echo "Error: Failed to download the font file."; rm -rf "$temp_dir"; exit 1; }
+  # Download the font zip file
+  echo "Downloading Hack Nerd Font..."
+  font_zip_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/Hack.zip"
+  temp_dir=$(mktemp -d)
+  font_zip_file="$temp_dir/Hack.zip"
 
-    # Unzip the font
-    echo "Unzipping $font_zip_file into $temp_dir..."
-    unzip -q "$font_zip_file" -d "$temp_dir"
+  # Download and unzip with error handling
+  wget -q -O "$font_zip_file" "$font_zip_url" && echo "Font download successful" || { echo "Error: Failed to download the font file."; rm -rf "$temp_dir"; exit 1; }
+  unzip -q "$font_zip_file" -d "$temp_dir" && echo "Font unzipped successfully" || { echo "Error: Failed to unzip the font file."; rm -rf "$temp_dir"; exit 1; }
 
-    # Find font files
-    font_files=$(find "$temp_dir" -type f)
+  # Check if any files were extracted
+  if [[ ! $(find "$temp_dir" -type f) ]]; then
+    echo "Error: No files found in temporary directory. Unzip might have failed."
+    rm -rf "$temp_dir"
+    exit 1
+  fi
 
-    # Prompt for password before copying (assuming a tool like `sudo -S` is available)
-    if [[ ! -z "$font_files" ]]; then
-      echo "Installing fonts to system directory requires root privileges. Please enter your password:"
-      sudo -S -p '' mv "$font_files" /usr/share/fonts
-    fi
+  # Find font files with flexible patterns and store in an array
+  font_files=( $(find "$temp_dir" -type f -name "*.ttf") )
 
-    # Update font cache
+  # Install fonts with sudo (assuming script is run with sudo)
+  echo "Installing fonts to system directory (/usr/share/fonts)..."
+
+  # Loop through font files in the array and copy
+  for font_file in "${font_files[@]}"; do
+    sudo cp "$font_file" /usr/share/fonts
+  done
+
+  echo "Font files installed successfully!"
+
+  # Update font cache (if applicable)
+  if [[ -n "$(command -v fc-cache)" ]]; then
     echo "Updating font cache"
     fc-cache -f
+  fi
 
-    # Clean up temporary files
-    echo "Cleaning temporary files: $temp_dir"
-    rm -rf "$temp_dir"
+  # Clean up temporary files
+  echo "Cleaning temporary files: $temp_dir"
+  rm -rf "$temp_dir"
 
-    set +e
+  set +e
 
-    echo "Hack Nerd Font installed successfully!"
+  echo "Hack Nerd Font installation complete!"
 }
 
 
