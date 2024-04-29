@@ -55,7 +55,7 @@ install_hack_nerd_font() {
 
 # Function to customize the terminal
 customize_terminal() {
-    $username = $USER
+    username = $USER
 
     qterminal_config="/home/$username/.config/qterminal.org/qterminal.ini"
 
