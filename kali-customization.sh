@@ -4,16 +4,11 @@
 install_hack_nerd_font() {
     echo "Installing Hack Nerd Font..."
 
-    # Check if root privileges are available
-    if ! sudo -n true 2>/dev/null; then
-        # Prompt for the root password
-        sudo -v || { echo "Error: Failed to obtain root privileges."; exit 1; }
-    fi
-
     # Enable error control
     set -e
 
     # Download the font zip file
+    echo "Downloading Hack Nerd Font..."
     font_zip_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/Hack.zip"
     temp_dir=$(mktemp -d)
     font_zip_file="$temp_dir/Hack.zip"
@@ -22,38 +17,35 @@ install_hack_nerd_font() {
     wget -q -O "$font_zip_file" "$font_zip_url" || { echo "Error: Failed to download the font file."; rm -rf "$temp_dir"; exit 1; }
 
     # Unzip the font
+    echo "Unzipping $font_zip_file into $temp_dir..."
     unzip -q "$font_zip_file" -d "$temp_dir"
 
-    # Move the font files to /usr/share/fonts and show the progress bar
-    find "$temp_dir" -type f -exec sh -c 'pv "$1" > "/usr/share/fonts/$(basename "$1")"' _ {} \;
+    # Find font files
+    font_files=$(find "$temp_dir" -type f)
+
+    # Prompt for password before copying (assuming a tool like `sudo -S` is available)
+    if [[ ! -z "$font_files" ]]; then
+      echo "Installing fonts to system directory requires root privileges. Please enter your password:"
+      sudo -S -p '' mv "$font_files" /usr/share/fonts
+    fi
 
     # Update font cache
-    sudo fc-cache -f
+    echo "Updating font cache"
+    fc-cache -f
 
     # Clean up temporary files
+    echo "Cleaning temporary files: $temp_dir"
     rm -rf "$temp_dir"
 
     set +e
 
-    echo "Hack Nerd Font installed successfully."
+    echo "Hack Nerd Font installed successfully!"
 }
 
 
 # Function to customize the terminal
 customize_terminal() {
-    read -p "Enter your username: " username
-
-    # Check if username is empty
-    if [ -z "$username" ]; then
-        echo "Error: Username cannot be empty."
-        return 1
-    fi
-
-    # Check if user exists
-    if ! id "$username" &>/dev/null; then
-        echo "Error: User '$username' does not exist."
-        return 1
-    fi
+    $username = $USER
 
     qterminal_config="/home/$username/.config/qterminal.org/qterminal.ini"
 
@@ -152,8 +144,8 @@ install_p10k() {
 
 # Function to install p10k with root privileges
 install_p10k_root() {
-    if [ "$(whoami)" != "root" ]; then
-        echo "This function requires root privileges. Please run with sudo."
+    if [ "$USER" != "root" ]; then
+        echo "This function requires to be root user. Please run it as root."
         exit 1
     fi
 
@@ -179,8 +171,9 @@ install_p10k_root() {
     fi
 
     # Clone the powerlevel10k repository as root
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/powerlevel10k
-
+    #git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/powerlevel10k
+    cp /home/$username/powerlevel10k /root/powerlevel10k
+    
     # Add the powerlevel10k theme to root's .zshrc file
     echo 'source /root/powerlevel10k/powerlevel10k.zsh-theme' >> /root/.zshrc
 
