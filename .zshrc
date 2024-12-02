@@ -244,9 +244,9 @@ fi
 alias ll='ls -l'
 alias la='ls -lia'
 alias l='ls -CF'
-alias cat='batcat'
-alias catn='cat'
-alias catnl='batcat --paging=never'
+alias cat='/usr/bin/batcat'
+alias catn='/bin/cat'
+alias catnl='/usr/bin/batcat --paging=never'
 
 # enable auto-suggestions based on the history
 if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
